@@ -1297,6 +1297,7 @@ class FormHelperTest extends CakeTestCase {
 		);
 		$this->assertEqual($result, $expected);
 	}
+
 /**
  * testPasswordValidation method
  *
@@ -1319,6 +1320,62 @@ class FormHelperTest extends CakeTestCase {
 			),
 			array('div' => array('class' => 'error-message')),
 			'Please provide a password',
+			'/div',
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+	}
+
+/**
+ * testEmptyErrorValidation method
+ *
+ * test validation error div when validation message is an empty string
+ *
+ * @access public
+ * @return void
+ */
+	function testEmptyErrorValidation() {
+		$this->Form->validationErrors['Contact']['password'] = '';
+		$result = $this->Form->input('Contact.password');
+		$expected = array(
+			'div' => array('class' => 'input password error'),
+			'label' => array('for' => 'ContactPassword'),
+			'Password',
+			'/label',
+			'input' => array(
+				'type' => 'password', 'name' => 'data[Contact][password]',
+				'id' => 'ContactPassword', 'class' => 'form-error'
+			),
+			array('div' => array('class' => 'error-message')),
+			array(),
+			'/div',
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+	}
+
+/**
+ * testEmptyInputErrorValidation method
+ *
+ * test validation error div when validation message is overriden by an empty string when calling input()
+ *
+ * @access public
+ * @return void
+ */
+	function testEmptyInputErrorValidation() {
+		$this->Form->validationErrors['Contact']['password'] = 'Please provide a password';
+		$result = $this->Form->input('Contact.password', array('error' => ''));
+		$expected = array(
+			'div' => array('class' => 'input password error'),
+			'label' => array('for' => 'ContactPassword'),
+			'Password',
+			'/label',
+			'input' => array(
+				'type' => 'password', 'name' => 'data[Contact][password]',
+				'id' => 'ContactPassword', 'class' => 'form-error'
+			),
+			array('div' => array('class' => 'error-message')),
+			array(),
 			'/div',
 			'/div'
 		);
@@ -2875,6 +2932,26 @@ class FormHelperTest extends CakeTestCase {
 		);
 		$this->assertTags($result, $expected);
 
+		$result = $this->Form->radio('Model.field', array('1' => 'Yes', '0' => 'No'));
+		$expected = array(
+			'fieldset' => array(),
+			'legend' => array(),
+			'Field',
+			'/legend',
+			'input' => array('type' => 'hidden', 'name' => 'data[Model][field]', 'value' => '', 'id' => 'ModelField_'),
+			array('input' => array('type' => 'radio', 'name' => 'data[Model][field]', 'value' => '1', 'id' => 'ModelField1')),
+			array('label' => array('for' => 'ModelField1')),
+			'Yes',
+			'/label',
+			array('input' => array('type' => 'radio', 'name' => 'data[Model][field]', 'value' => '0', 'id' => 'ModelField0')),
+			array('label' => array('for' => 'ModelField0')),
+			'No',
+			'/label',
+			'/fieldset'
+		);
+		$this->assertTags($result, $expected);
+
+		$this->Form->data = array('Model' => array('field' => ''));
 		$result = $this->Form->radio('Model.field', array('1' => 'Yes', '0' => 'No'));
 		$expected = array(
 			'fieldset' => array(),
@@ -5597,6 +5674,23 @@ class FormHelperTest extends CakeTestCase {
 	}
 
 /**
+ * Test submit image with timestamps.
+ *
+ * @return void
+ */
+	function testSubmitImageTimestamp() {
+		Configure::write('Asset.timestamp', 'force');
+
+		$result = $this->Form->submit('cake.power.gif');
+		$expected = array(
+			'div' => array('class' => 'submit'),
+			'input' => array('type' => 'image', 'src' => 'preg:/img\/cake\.power\.gif\?\d*/'),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+	}
+
+/**
  * test the create() method
  *
  * @access public
@@ -5804,7 +5898,7 @@ class FormHelperTest extends CakeTestCase {
 
 		$expected = array(
 			'form' => array(
-				'id' => 'ContactAddForm', 'method' => 'post', 
+				'id' => 'ContactAddForm', 'method' => 'post',
 				'onsubmit' => 'someFunction();event.returnValue = false; return false;',
 				'action' => '/contacts/index/param',
 				'accept-charset' => 'utf-8'

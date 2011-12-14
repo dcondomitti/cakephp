@@ -1459,8 +1459,10 @@ class DboSourceTest extends CakeTestCase {
 			'offset' => array(),
 			'conditions' => array(),
 			'order' => array(),
-			'group' => null
+			'group' => null,
+			'callbacks' => null
 		);
+		$queryData['joins'][0]['table'] = $this->testDb->fullTableName($queryData['joins'][0]['table']);
 		$this->assertEqual($queryData, $expected);
 
 		$result = $this->testDb->generateAssociationQuery($this->Model, $null, null, null, null, $queryData, false, $null);
@@ -3522,7 +3524,7 @@ class DboSourceTest extends CakeTestCase {
 		$result = $this->testDb->order(array('Property.sale_price IS NULL'));
 		$expected = ' ORDER BY `Property`.`sale_price` IS NULL ASC';
 		$this->assertEqual($result, $expected);
-		
+
 		$result = $this->testDb->order(array('Export.column-name' => 'ASC'));
 		$expected = ' ORDER BY `Export`.`column-name` ASC';
 		$this->assertEqual($result, $expected, 'Columns with -s are not working with order()');
@@ -4477,12 +4479,12 @@ class DboSourceTest extends CakeTestCase {
  */
 	function testVirtualFieldsComplexRead() {
 		$this->loadFixtures('DataTest', 'Article', 'Comment');
-		
+
 		$Article =& ClassRegistry::init('Article');
 		$commentTable = $this->db->fullTableName('comments');
 		$Article =& ClassRegistry::init('Article');
 		$Article->virtualFields = array(
-			'comment_count' => 'SELECT COUNT(*) FROM ' . $commentTable . 
+			'comment_count' => 'SELECT COUNT(*) FROM ' . $commentTable .
 				' AS Comment WHERE Article.id = Comment.article_id'
 		);
 		$result = $Article->find('all');
@@ -4587,7 +4589,7 @@ class DboSourceTest extends CakeTestCase {
 		$Article->tablePrefix = 'tbl_';
 		$result = $this->testDb->fullTableName($Article, false);
 		$this->assertEqual($result, 'tbl_articles');
-		
+
 		$Article->useTable = $Article->table = 'with spaces';
 		$Article->tablePrefix = '';
 		$result = $this->testDb->fullTableName($Article);

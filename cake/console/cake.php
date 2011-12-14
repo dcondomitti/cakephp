@@ -147,7 +147,7 @@ class ShellDispatcher {
 	function __initConstants() {
 		if (function_exists('ini_set')) {
 			ini_set('display_errors', '1');
-			ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
+			ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT);
 			ini_set('html_errors', false);
 			ini_set('implicit_flush', true);
 			ini_set('max_execution_time', 0);
@@ -450,7 +450,7 @@ class ShellDispatcher {
 		}
 		$result = trim($result);
 
-		if ($default != null && empty($result)) {
+		if ($default !== null && ($result === '' || $result === null)) {
 			return $default;
 		}
 		return $result;
@@ -471,7 +471,6 @@ class ShellDispatcher {
 			return fwrite($this->stdout, $string);
 		}
 	}
-
 /**
  * Outputs to the stderr filehandle.
  *
