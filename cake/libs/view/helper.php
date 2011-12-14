@@ -255,12 +255,16 @@ class Helper extends Overloadable {
 				$theme = $segments[1];
 				unset($segments[0], $segments[1]);
 				$themePath = App::themePath($theme) . 'webroot' . DS . implode(DS, $segments);
-				return $path . '?' . @filemtime($themePath);
+				if (file_exists($themePath)) {
+					return $path . '?' . @filemtime($themePath);
+				}
 			} else {
 				$plugin = $segments[0];
 				unset($segments[0]);
 				$pluginPath = App::pluginPath($plugin) . 'webroot' . DS . implode(DS, $segments);
-				return $path . '?' . @filemtime($pluginPath);
+				if (file_exists($pluginPath)) {
+					return $path . '?' . @filemtime($pluginPath);
+				}
 			}
 		}
 		return $path;
